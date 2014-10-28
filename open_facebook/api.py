@@ -472,7 +472,7 @@ class FacebookAuthorization(FacebookConnection):
         sig = base64_url_decode_php_style(encoded_sig)
         import hmac
         import hashlib
-        data = json.loads(base64_url_decode_php_style(payload)).decode('UTF-8')
+        data = json.loads(base64_url_decode_php_style(payload).decode('UTF-8'))
 
         algo = data.get('algorithm').upper()
         if algo != 'HMAC-SHA256':

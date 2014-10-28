@@ -150,7 +150,7 @@ def try_get_profile(user):
 
 def hash_key(key):
     import hashlib
-    hashed = hashlib.md5(key).hexdigest()
+    hashed = hashlib.md5(key.encode('UTF-8')).hexdigest()
     return hashed
 
 

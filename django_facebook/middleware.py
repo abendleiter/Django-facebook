@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 try:
-    from urlparse import urlparse
+    from urllib.parse import urlparse
 except ImportError:
     from urllib.parse import urlparse
 
@@ -77,7 +77,7 @@ class FacebookCanvasMiddleWare(object):
                 signed_request)
             access_token = parsed_signed_request['oauth_token']
             if six.PY2:
-                facebook_id = long(parsed_signed_request['user_id'])
+                facebook_id = int(parsed_signed_request['user_id'])
             else:
                 facebook_id = int(parsed_signed_request['user_id'])
         except:

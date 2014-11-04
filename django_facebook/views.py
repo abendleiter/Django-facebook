@@ -17,9 +17,9 @@ from open_facebook.utils import send_warning
 import logging
 
 try:
-    unicode = unicode
+    str = str
 except NameError:
-    unicode = str
+    str = str
 
 logger = logging.getLogger(__name__)
 
@@ -44,7 +44,7 @@ def connect(request, graph):
         response = _connect(request, graph)
     except open_facebook_exceptions.FacebookUnreachable as e:
         # often triggered when Facebook is slow
-        warning_format = u'%s, often caused by Facebook slowdown, error %s'
+        warning_format = '%s, often caused by Facebook slowdown, error %s'
         warn_message = warning_format % (type(e), str(e))
         send_warning(warn_message, e=e)
         additional_params = dict(fb_error_or_cancel=1)
@@ -86,8 +86,8 @@ def _connect(request, graph):
             logger.info('Django facebook performed action: %s', action)
         except facebook_exceptions.IncompleteProfileError as e:
             # show them a registration form to add additional data
-            warning_format = u'Incomplete profile data encountered with error %s'
-            warn_message = warning_format % unicode(e)
+            warning_format = 'Incomplete profile data encountered with error %s'
+            warn_message = warning_format % str(e)
             send_warning(warn_message, e=e,
                          facebook_data=facebook_data)
 

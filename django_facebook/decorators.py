@@ -107,7 +107,7 @@ class FacebookRequired(object):
         Redirect to Facebook's oAuth dialog
         '''
         logger.info(
-            u'requesting access with redirect uri: %s, error was %s',
+            'requesting access with redirect uri: %s, error was %s',
             redirect_uri, e)
 
         # for internal Facebook pages we should use a script to redirect

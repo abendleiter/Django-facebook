@@ -123,7 +123,7 @@ def update_user_attributes(user, profile, attributes_dict, save=False):
     is_profile_field = lambda f: f in profile_fields and hasattr(profile, f)
     is_user_field = lambda f: f in user_fields and hasattr(user, f)
 
-    for f, value in attributes_dict.items():
+    for f, value in list(attributes_dict.items()):
         if is_profile_field(f):
             setattr(profile, f, value)
             profile._fb_is_dirty = True
@@ -329,8 +329,8 @@ def mass_get_or_create(model_class, base_queryset, id_field, default_dict,
     '''
     current_instances = list(base_queryset)
     current_ids = set(
-        [unicode(getattr(c, id_field)) for c in current_instances])
-    given_ids = map(unicode, default_dict.keys())
+        [str(getattr(c, id_field)) for c in current_instances])
+    given_ids = list(map(str, list(default_dict.keys())))
     # both ends of the comparison are in unicode ensuring the not in works
     new_ids = [g for g in given_ids if g not in current_ids]
     prepared_models = []
@@ -506,7 +506,7 @@ def to_int(input, default=0, exception=(ValueError, TypeError), regexp=None):
     elif hasattr(regexp, 'search'):
         pass
     elif regexp is not None:
-        raise(TypeError, 'unknown argument for regexp parameter')
+        raise TypeError('unknown argument for regexp parameter')
 
     try:
         if regexp:
@@ -559,7 +559,7 @@ def cleanup_oauth_url(redirect_uri):
     '''
     if '?' in redirect_uri:
         redirect_base, redirect_query = redirect_uri.split('?', 1)
-        query_dict_items = QueryDict(redirect_query).items()
+        query_dict_items = list(QueryDict(redirect_query).items())
     else:
         query_dict_items = QueryDict('', True)
 

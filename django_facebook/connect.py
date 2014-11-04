@@ -15,9 +15,9 @@ from django_facebook.utils import get_registration_backend, get_form_class, \
 from random import randint
 import logging
 import sys
-import urllib
+import urllib.request, urllib.parse, urllib.error
 try:
-    import urllib2
+    import urllib.request, urllib.error, urllib.parse
 except ImportError:
     import urllib.error as urllib2
 
@@ -156,12 +156,12 @@ def _update_likes_and_friends(request, user, facebook):
             facebook.get_and_store_friends(user)
         transaction.savepoint_commit(sid)
     except IntegrityError as e:
-        logger.warn(u'Integrity error encountered during registration, '
+        logger.warn('Integrity error encountered during registration, '
                     'probably a double submission %s' % e,
                     exc_info=sys.exc_info(), extra={
                         'request': request,
                         'data': {
-                            'body': unicode(e),
+                            'body': str(e),
                         }
                     })
         transaction.savepoint_rollback(sid)
@@ -215,7 +215,7 @@ def _register_user(request, facebook, profile_callback=None,
     facebook_data = facebook.facebook_registration_data()
 
     data = request.POST.copy()
-    for k, v in facebook_data.items():
+    for k, v in list(facebook_data.items()):
         if not data.get(k):
             data[k] = v
     if remove_old_connections:
@@ -377,7 +377,7 @@ def _update_image(facebook_id, image_url):
     image_name = 'fb_image_%s.jpg' % facebook_id
     image_temp = NamedTemporaryFile()
     try:
-        image_response = urllib2.urlopen(image_url)
+        image_response = urllib.request.urlopen(image_url)
     except AttributeError:
         image_response = urllib.request.urlopen(image_url)
     image_content = image_response.read()

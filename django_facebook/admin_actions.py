@@ -17,7 +17,7 @@ def retry_facebook_invite(modeladmin, request, queryset):
     for invite in invites:
         user_invites[invite.user].append(invite)
 
-    for user, invites in user_invites.items():
+    for user, invites in list(user_invites.items()):
         profile = user.get_profile()
         graph = profile.get_offline_graph()
         if not graph:

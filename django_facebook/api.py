@@ -54,8 +54,7 @@ def get_persistent_graph(request, *args, **kwargs):
     '''
     from open_facebook.api import OpenFacebook
     if not request:
-        raise(ValidationError,
-              'Request is required if you want to use persistent tokens')
+        raise ValidationError('Request is required if you want to use persistent tokens')
 
     graph = None
     # some situations like an expired access token require us to refresh our
@@ -329,7 +328,7 @@ class FacebookUserConverter(object):
 
         facebook_map = dict(birthday='date_of_birth',
                             about='about_me', id='facebook_id')
-        for k, v in facebook_map.items():
+        for k, v in list(facebook_map.items()):
             user_data[v] = user_data.get(k)
         user_data['facebook_id'] = int(user_data['facebook_id'])
 

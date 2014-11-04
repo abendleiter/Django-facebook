@@ -8,6 +8,7 @@ from django_facebook.utils import compatible_datetime as datetime
 from django.contrib.contenttypes.models import ContentType
 import logging
 from open_facebook.exceptions import OAuthException, UnsupportedDeleteRequest
+from functools import reduce
 logger = logging.getLogger(__name__)
 
 

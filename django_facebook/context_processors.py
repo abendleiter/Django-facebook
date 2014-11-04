@@ -2,9 +2,9 @@ from django.utils.safestring import mark_safe
 
 
 try:
-    unicode = unicode
+    str = str
 except NameError:
-    unicode = str
+    str = str
 
 
 def facebook(request):
@@ -14,7 +14,7 @@ def facebook(request):
     context['FACEBOOK_APP_ID'] = fb_settings.FACEBOOK_APP_ID
     context['FACEBOOK_DEFAULT_SCOPE'] = fb_settings.FACEBOOK_DEFAULT_SCOPE
 
-    default_scope_js = unicode(json.dumps(
+    default_scope_js = str(json.dumps(
         fb_settings.FACEBOOK_DEFAULT_SCOPE))
     default_scope_js = mark_safe(default_scope_js)
     context['FACEBOOK_DEFAULT_SCOPE_JS'] = default_scope_js

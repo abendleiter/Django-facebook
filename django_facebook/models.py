@@ -1,4 +1,4 @@
-from __future__ import unicode_literals
+
 from django.utils.encoding import python_2_unicode_compatible
 from django.conf import settings
 from django.contrib.contenttypes import generic
@@ -318,7 +318,7 @@ class FacebookUser(models.Model):
         unique_together = ['user_id', 'facebook_id']
 
     def __str__(self):
-        return u'Facebook user %s' % self.name
+        return 'Facebook user %s' % self.name
 
 
 class FacebookLike(models.Model):
@@ -387,12 +387,11 @@ class BaseModelMetaclass(ModelBase):
 
 
 @python_2_unicode_compatible
-class BaseModel(models.Model):
+class BaseModel(models.Model, metaclass=BaseModelMetaclass):
 
     '''
     Stores the fields common to all incentive models
     '''
-    __metaclass__ = BaseModelMetaclass
 
     def __str__(self):
         '''

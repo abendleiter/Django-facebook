@@ -96,8 +96,9 @@ import re
 
 try:
     # python 2 imports
-    from urlparse import urlparse
-    from urllib2 import build_opener, HTTPError, URLError
+    from urllib.parse import urlparse
+    from urllib.request import build_opener
+    from urllib.error import HTTPError, URLError
 except ImportError:
     # python 3 imports
     from urllib.error import HTTPError, URLError
@@ -153,7 +154,7 @@ class FacebookConnection(object):
         # change fb__explicitly_shared to fb:explicitly_shared
         if post_data:
             post_data = dict(
-                (k.replace('__', ':'), v) for k, v in post_data.items())
+                (k.replace('__', ':'), v) for k, v in list(post_data.items()))
 
         logger.info('requesting url %s with post data %s', url, post_data)
         post_request = (post_data is not None or 'method=post' in url)
@@ -206,7 +207,7 @@ class FacebookConnection(object):
                 # These are often temporary errors, so we will retry before
                 # failing
                 error_format = 'Facebook encountered a timeout (%ss) or error %s'
-                logger.warn(error_format, extended_timeout, unicode(e))
+                logger.warn(error_format, extended_timeout, str(e))
                 attempts -= 1
                 if not attempts:
                     # if we have no more attempts actually raise the error
@@ -329,7 +330,7 @@ class FacebookConnection(object):
         error_message = message
         if error_code:
             # this is handy when adding new exceptions for facebook errors
-            error_message = u'%s (error code %s)' % (message, error_code)
+            error_message = '%s (error code %s)' % (message, error_code)
 
         raise error_class(error_message)
 
@@ -375,9 +376,7 @@ class FacebookConnection(object):
                         matching_error_class = class_
                         logger.info('Matched error on code %s', code)
                 else:
-                    raise(
-                        ValueError, 'Dont know how to handle %s of '
-                        'type %s' % (code, type(code)))
+                    raise ValueError('Dont know how to handle %s of type %s' % (code, type(code)))
             # tell about the happy news if we found something
             if matching_error_class:
                 error_class = matching_error_class
@@ -586,7 +585,7 @@ class FacebookAuthorization(FacebookConnection):
         # retrieve all test users
         test_users = cls.get_test_users(app_access_token)
         user_id_dict = dict([(int(u['id']), u) for u in test_users])
-        user_ids = map(str, user_id_dict.keys())
+        user_ids = list(map(str, list(user_id_dict.keys())))
 
         # use fql to figure out their names
         facebook = OpenFacebook(app_access_token)
@@ -867,7 +866,7 @@ class OpenFacebook(FacebookConnection):
         except facebook_exceptions.OAuthException:
             permissions = {}
         permissions_dict = dict([(k, bool(int(v)))
-                                 for k, v in permissions.items()
+                                 for k, v in list(permissions.items())
                                  if v == '1' or v == 1])
         return permissions_dict
 

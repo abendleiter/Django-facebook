@@ -2,13 +2,13 @@
 Facebook error classes also see
 http://fbdevwiki.com/wiki/Error_codes#User_Permission_Errors
 '''
-from __future__ import unicode_literals
+
 
 import ssl
 
 try:
     # python 2 imports
-    from urllib2 import HTTPError, URLError
+    from urllib.error import HTTPError, URLError
 except ImportError:
     # python 3 imports
     from urllib.error import HTTPError, URLError

@@ -7,7 +7,7 @@ from functools import wraps
 logger = logging.getLogger(__name__)
 
 
-@task.shared_task(ignore_result=True)
+@task.task(ignore_result=True)
 def extend_access_token(profile, access_token):
     '''
     Extends the access token to 60 days and saves it on the profile
@@ -20,7 +20,7 @@ def extend_access_token(profile, access_token):
     return results
 
 
-@task.shared_task(ignore_result=True)
+@task.task(ignore_result=True)
 def store_likes(user, likes):
     '''
     Inserting again will not cause any errors, so this is safe
@@ -38,7 +38,7 @@ def store_likes(user, likes):
     return likes
 
 
-@task.shared_task(ignore_result=True)
+@task.task(ignore_result=True)
 def store_friends(user, friends):
     '''
     Inserting again will not cause any errors, so this is safe
@@ -56,7 +56,7 @@ def store_friends(user, friends):
     return friends
 
 
-@task.shared_task(ignore_result=True)
+@task.task(ignore_result=True)
 def get_and_store_likes(user, facebook):
     '''
     Since facebook is quite slow this version also runs the get
@@ -81,7 +81,7 @@ def get_and_store_likes(user, facebook):
             'get_and_store_likes failed for %s with error %s', user.id, e)
 
 
-@task.shared_task(ignore_result=True)
+@task.task(ignore_result=True)
 def get_and_store_friends(user, facebook):
     '''
     Since facebook is quite slow this version also runs the get
@@ -106,7 +106,7 @@ def get_and_store_friends(user, facebook):
             'get_and_store_friends failed for %s with error %s', user.id, e)
 
 
-@task.shared_task(ignore_result=True)
+@task.task(ignore_result=True)
 def remove_share(share):
     '''
     Removes the given open graph share
@@ -116,7 +116,7 @@ def remove_share(share):
     share._remove()
 
 
-@task.shared_task(ignore_result=True)
+@task.task(ignore_result=True)
 def retry_open_graph_share(share, reset_retries=False):
     '''
     We will retry open graph shares after 15m to make sure we dont miss out on any
@@ -126,7 +126,7 @@ def retry_open_graph_share(share, reset_retries=False):
     share.retry(reset_retries=reset_retries)
 
 
-@task.shared_task(ignore_result=True)
+@task.task(ignore_result=True)
 def retry_open_graph_shares_for_user(user):
     '''
     We retry the open graph shares for a user when he gets a new access token

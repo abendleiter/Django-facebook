@@ -226,7 +226,7 @@ def get_facebook_graph(request=None, access_token=None, redirect_uri=None, raise
                 else:
                     return None
 
-    graph = OpenFacebook(access_token, signed_data, expires=expires)
+    graph = OpenFacebook(access_token, signed_data, expires=expires, version='v2.3')
     # add user specific identifiers
     if request:
         _add_current_user_id(graph, request.user)

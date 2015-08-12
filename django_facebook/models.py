@@ -1,7 +1,10 @@
 
 from django.utils.encoding import python_2_unicode_compatible
 from django.conf import settings
-from django.contrib.contenttypes import generic
+try:
+    from django.contrib.contenttypes.fields import GenericForeignKey
+except ImportError:
+    from django.contrib.contenttypes.generic import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.db.models.base import ModelBase
@@ -11,7 +14,7 @@ from datetime import timedelta
 from django_facebook.utils import compatible_datetime as datetime, \
     get_model_for_attribute, get_user_attribute, get_instance_for_attribute, \
     try_get_profile, update_user_attributes
-from django_facebook.utils import get_user_model
+from django_facebook.utils import get_user_model, get_profile
 from open_facebook.exceptions import OAuthException
 import logging
 import os
@@ -288,7 +291,7 @@ class FacebookModel(BaseFacebookModel):
         if user_or_profile_model == user_model:
             return self
         else:
-            return self.get_profile()
+            return get_profile(self)
 
     class Meta:
         abstract = True
@@ -503,9 +506,10 @@ class OpenGraphShare(BaseModel):
 
     # what we are sharing, dict and object
     share_dict = models.TextField(blank=True, null=True)
+
     content_type = models.ForeignKey(ContentType, blank=True, null=True)
     object_id = models.PositiveIntegerField(blank=True, null=True)
-    content_object = generic.GenericForeignKey('content_type', 'object_id')
+    content_object = GenericForeignKey('content_type', 'object_id')
 
     # completion data
     error_message = models.TextField(blank=True, null=True)
@@ -527,7 +531,7 @@ class OpenGraphShare(BaseModel):
 
     def save(self, *args, **kwargs):
         if self.user and not self.facebook_user_id:
-            profile = self.user.get_profile()
+            profile = get_profile(self.user)
             self.facebook_user_id = get_user_attribute(
                 self.user, profile, 'facebook_id')
         return BaseModel.save(self, *args, **kwargs)
@@ -544,8 +548,7 @@ class OpenGraphShare(BaseModel):
             self.user, profile, 'access_token')
         graph = graph or user_or_profile.get_offline_graph()
         user_enabled = shared_explicitly or \
-            (user_or_profile.facebook_open_graph
-             and self.facebook_user_id)
+            (user_or_profile.facebook_open_graph and self.facebook_user_id)
         # start sharing
         if graph and user_enabled:
             graph_location = '%s/%s' % (
@@ -622,7 +625,7 @@ class OpenGraphShare(BaseModel):
         Update the share with the given data
         '''
         result = None
-        profile = self.user.get_profile()
+        profile = get_profile(self.user)
         graph = graph or profile.get_offline_graph()
 
         # update the share dict so a retry will do the right thing
@@ -640,7 +643,7 @@ class OpenGraphShare(BaseModel):
         if not self.share_id:
             raise ValueError('Can only delete shares which have an id')
         # see if the graph is enabled
-        profile = self.user.get_profile()
+        profile = get_profile(self.user)
         graph = graph or profile.get_offline_graph()
         response = None
         if graph:

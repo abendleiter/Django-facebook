@@ -1,11 +1,11 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.shortcuts import render_to_response
 from django.contrib.auth import models as auth_models
 from django import template
 from collections import defaultdict
 import logging
+from django_facebook.utils import get_profile
 logger = logging.getLogger(__name__)
-from django.contrib import messages
 
 
 def retry_facebook_invite(modeladmin, request, queryset):
@@ -17,8 +17,8 @@ def retry_facebook_invite(modeladmin, request, queryset):
     for invite in invites:
         user_invites[invite.user].append(invite)
 
-    for user, invites in list(user_invites.items()):
-        profile = user.get_profile()
+    for user, invites in user_invites.items():
+        profile = get_profile(user)
         graph = profile.get_offline_graph()
         if not graph:
             error_message = 'couldnt connect to the graph, user access token is %s' % profile.access_token
